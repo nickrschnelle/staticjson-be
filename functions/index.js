@@ -9,21 +9,17 @@ const generateHash = () => nanoidGenerate(nanoidUrl, 15);
 const getHashFromUrl = url => url.split('/serve/')[1];
 
 const database = {};
-
+app.use(cors);
 app.get('/serve/*', (req, res) => {
-  cors(req, res, () => {
-    res.setHeader('Content-type', 'application/json');
-    const hash = getHashFromUrl(req.originalUrl);
-    res.send(JSON.stringify(database[hash]));
-  });
+  res.setHeader('Content-type', 'application/json');
+  const hash = getHashFromUrl(req.originalUrl);
+  res.send(JSON.parse(database[hash]));
 });
 
 app.post('/submit', (req, res) => {
-  cors(req, res, () => {
-    const url = generateHash();
-    database[url] = req.body;
-    res.send({ url });
-  });
+  const url = generateHash();
+  database[url] = JSON.stringify(req.body);
+  res.send({ url });
 });
 
 exports.app = functions.https.onRequest(app);
